@@ -2,7 +2,8 @@
 
 Experiment code, evaluation scripts, and figure generation for the paper
 **LLMs for Agentic Home Energy Management**
-([arXiv:2607.04569](https://arxiv.org/abs/2607.04569)).
+([arXiv:2607.04569](https://arxiv.org/abs/2607.04569) ·
+[project website](https://www.ecohomeagent.com/)).
 
 This repository contains the experiment harness and plotting scripts used to
 produce the results and figures in the paper. The system under study is a
