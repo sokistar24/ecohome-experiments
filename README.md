@@ -125,13 +125,12 @@ python plot_fig5_cumulative.py
 If you use this code, please cite the paper:
 
 ```bibtex
-@article{ecohome2026,
-  title   = {LLMs for Agentic Home Energy Management},
-  journal = {arXiv preprint arXiv:2607.04569},
-  year    = {2026},
-  url     = {https://arxiv.org/abs/2607.04569}
+@article{jonah2026llms,
+  title={LLMs for Agentic Home Energy Management},
+  author={Jonah, Sokipriala},
+  journal={arXiv preprint arXiv:2607.04569},
+  year={2026}
 }
 ```
 
-> Fill in the author list and any remaining bibliographic fields from the
-> published arXiv record before distributing.
+
