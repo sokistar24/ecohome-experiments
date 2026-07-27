@@ -55,9 +55,21 @@ def _done_ids(log: Path) -> set:
     out = set()
     for line in log.read_text().splitlines():
         try:
-            out.add(json.loads(line)["run_id"])
+            row = json.loads(line)
         except Exception:
             continue
+        # A run counts as done only if it completed WITHOUT error. Errored
+        # rows (e.g. a transient 429 / provider overload from DeepInfra) are
+        # deliberately NOT marked done, so simply re-invoking the same command
+        # retries exactly the failed run_ids and skips the good ones. The last
+        # (successful) row for a run_id wins if an earlier attempt errored.
+        rid = row.get("run_id")
+        if rid is None:
+            continue
+        if row.get("error"):
+            out.discard(rid)
+        else:
+            out.add(rid)
     return out
 
 

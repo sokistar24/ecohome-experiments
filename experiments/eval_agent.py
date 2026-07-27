@@ -32,6 +32,34 @@ def _make_llm(model_key: str):
         from langchain_openai import ChatOpenAI
         return ChatOpenAI(model=model, temperature=config.TEMPERATURE,
                           api_key=os.getenv("OPENAI_API_KEY"))
+    if provider == "deepinfra":
+        # DeepInfra exposes an OpenAI-compatible endpoint, so we reuse the
+        # same client with a base_url override. Native function calling is
+        # served through the standard tools/tool_calls fields, so the "fc"
+        # interface (create_react_agent) works unchanged. response_metadata
+        # carries the DeepInfra model string, captured by _snapshot().
+        #
+        # Some Qwen3 builds default to thinking mode ON, which is documented to
+        # plan tool calls in the reasoning trace without emitting them. When a
+        # model spec sets enable_thinking=False we forward it through the
+        # chat-template kwargs (the vLLM/SGLang/DeepInfra convention) so the
+        # served model runs non-thinking and emits clean tool calls. Passed via
+        # extra_body so it rides on every request body, not just construction.
+        from langchain_openai import ChatOpenAI
+        kwargs = dict(model=model, temperature=config.TEMPERATURE,
+                      api_key=os.getenv("DEEPINFRA_API_KEY"),
+                      base_url="https://api.deepinfra.com/v1/openai",
+                      # Cap output tokens: some DeepInfra serves (e.g.
+                      # Qwen3-32B, max_model_len=40960) reject the provider
+                      # default max_tokens (65536) outright. 8192 is ample for
+                      # these scheduling replies and leaves room for the
+                      # ~13-18k-token tool-augmented input within the window.
+                      max_tokens=config.DEEPINFRA_MAX_TOKENS)
+        if "enable_thinking" in spec:
+            kwargs["extra_body"] = {
+                "chat_template_kwargs": {
+                    "enable_thinking": spec["enable_thinking"]}}
+        return ChatOpenAI(**kwargs)
     if provider == "google":
         from langchain_google_genai import ChatGoogleGenerativeAI
         return ChatGoogleGenerativeAI(model=model,

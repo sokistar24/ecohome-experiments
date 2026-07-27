@@ -26,6 +26,13 @@ from experiments.runner import STANDARD_Q, SINGLE_Q, run_id
 ALL_THREE = ["washing_machine", "dishwasher", "ev_charger"]
 EV_LF = 15                                    # 07:30 finish
 MODELS3 = ["gpt", "gemini", "claude"]
+# Open-weight extension: these enter ONLY Exp 1 and Exp 2 (coordination and
+# constraint-conflict), the axes where the open-vs-closed comparison to [17]
+# is meaningful. Exp 3/4 (weather regime, longitudinal) stay closed-only by
+# construction -- their grids iterate MODELS3, so no open-model spec is ever
+# generated for them.
+MODELS_OPEN = ["llama-3.3", "qwen-3"]
+MODELS_EXP12 = MODELS3 + MODELS_OPEN
 
 
 def _eval_date(day: str) -> str:
@@ -43,7 +50,7 @@ def exp1_specs(pilot: bool = False) -> List[Dict]:
         days = [d for t in ("low", "mid", "high") for d in terciles[t]]
         reps, interfaces = config.REPS_EXP1, list(config.INTERFACES)
     specs = []
-    for model in MODELS3:
+    for model in MODELS_EXP12:
         for interface in interfaces:
             for day in days:
                 for kind, q, requested, cons in (
@@ -71,7 +78,7 @@ def exp2_specs() -> List[Dict]:
     scen_dir = config.ARCHIVE / "scenarios"
     manifest = json.loads((scen_dir / "manifest.json").read_text())
     specs = []
-    for model in MODELS3:
+    for model in MODELS_EXP12:
         for entry in manifest:
             s = json.loads((scen_dir / f"{entry['id']}.json").read_text())
             requested = ALL_THREE                       # every scenario asks all 3

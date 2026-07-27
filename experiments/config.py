@@ -25,6 +25,25 @@ MODELS = {
     "gpt":    {"provider": "openai",    "model": "gpt-4o-mini"},
     "gemini": {"provider": "google",    "model": "gemini-2.5-flash"},
     "claude": {"provider": "anthropic", "model": "claude-sonnet-4-6"},
+    # Open-weight backends via DeepInfra (OpenAI-compatible endpoint).
+    # Added for the open-vs-closed extension (Exp 1/2 only; scoped in grids).
+    # Both are models reported by [17]: Llama-3.3 succeeded at multi-appliance
+    # coordination there; Qwen-3 failed it. Re-running them under native
+    # function calling tests whether the interface, not the model, drove that
+    # gap. Served precision differs from reference weights -- footnoted:
+    #   llama-3.3-70b: DeepInfra "Turbo" (optimized/quantized) serve
+    #   qwen3-32b:     dense 32B, run in NON-THINKING mode (enable_thinking=
+    #                  False) so it does not emit <think> blocks. Qwen3-32B
+    #                  defaults to thinking ON, which is documented to plan
+    #                  tool calls in the reasoning trace without emitting them
+    #                  (~60% of the time) -- i.e. conversational
+    #                  short-circuiting. Disabling thinking gives ~100% tool
+    #                  execution and keeps the interface comparison clean.
+    "llama-3.3": {"provider": "deepinfra",
+                  "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo"},
+    "qwen-3": {"provider": "deepinfra",
+               "model": "Qwen/Qwen3-32B",
+               "enable_thinking": False},
 }
 TEMPERATURE = 0.0
 INTERFACES = ("fc", "text")          # native function calling / parsed ReAct
@@ -86,6 +105,10 @@ NOISE_LEVELS = (0.10, 0.25, 0.50)    # multiplicative PV-forecast noise (champio
 
 # ---------------------------------------------------------------- runner
 AGENT_RECURSION_LIMIT = 30           # max ReAct iterations before abort
+# DeepInfra output-token cap. Some open-weight serves (e.g. Qwen3-32B with
+# max_model_len=40960) reject the provider default max_tokens=65536. 8192 is
+# ample for scheduling replies and leaves room for the tool-augmented input.
+DEEPINFRA_MAX_TOKENS = 8192
 FINAL_ANSWER_TRUNCATE = 2500         # chars of final answer kept in the log
 # $/1M tokens (input, output) -- BUDGETING ESTIMATES ONLY; verify against
 # provider pricing pages before trusting cost totals.
@@ -93,5 +116,8 @@ PRICE_PER_MTOK = {
     "gpt":    (0.15, 0.60),
     "gemini": (0.30, 2.50),
     "claude": (3.00, 15.00),
+    # DeepInfra list prices (USD/1M tok) at time of run -- verify before trusting.
+    "llama-3.3": (0.13, 0.39),
+    "qwen-3":    (0.10, 0.30),
     "mock":   (0.0, 0.0),
 }

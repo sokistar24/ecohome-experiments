@@ -21,10 +21,20 @@ os.makedirs("figs", exist_ok=True)
 rows = [r for r in csv.DictReader(open("data/results/exp1_main.csv"))
         if r["interface"] == "fc"]
 
-COL = {"gpt": "#2166ac", "gemini": "#d73027", "claude": "#4dac26"}
+_models = {r["model"] for r in rows}
+_want = {"gpt", "gemini", "claude", "llama-3.3", "qwen-3"}
+_missing = _want - _models
+if _missing:
+    raise SystemExit(f"ERROR: exp1_main.csv (fc) missing models: {sorted(_missing)}. "
+                     f"Present: {sorted(_models)}")
+
+COL = {"gpt": "#2166ac", "gemini": "#d73027", "claude": "#4dac26",
+       "llama-3.3": "#8073ac", "qwen-3": "#e08214"}
 LAB = {"gpt": "GPT-4o-mini", "gemini": "Gemini 2.5 Flash",
-       "claude": "Claude Sonnet 4.6"}
-ORDER = ["gpt", "gemini", "claude"]
+       "claude": "Claude Sonnet 4.6",
+       "llama-3.3": "Llama-3.3 70B", "qwen-3": "Qwen-3 32B"}
+ORDER = ["gpt", "gemini", "claude", "llama-3.3", "qwen-3"]
+OPEN = {"llama-3.3", "qwen-3"}
 
 def bubble(cost):
     return 320 + cost * 15000
@@ -37,36 +47,26 @@ for m in ORDER:
     opt  = float(r["optimality_rate"])
     lat  = float(r["mean_latency_s"])
     cost = float(r["cost_per_success_usd"])
+    marker = "s" if m in OPEN else "o"   # squares = open-source
     ax.scatter(lat, opt, s=bubble(cost), c=COL[m], edgecolors="white",
-               linewidths=2.2, alpha=0.90, zorder=3)
+               linewidths=2.2, alpha=0.90, zorder=3, marker=marker)
 
 ax.axhline(1.0, color="grey", lw=1.0, ls="--", zorder=1)
 ax.set_xlabel("Mean latency per run (s)  " + r"$\rightarrow$" + " slower",
               fontsize=14)
 ax.set_ylabel("Optimality rate  ",
               fontsize=14)
-ax.set_ylim(0.80, 1.04)
-ax.set_xlim(0, 26)
-ax.set_yticks([0.85, 0.90, 0.95, 1.00])
-ax.tick_params(axis="both", labelsize=14)
+ax.set_ylim(0.30, 1.06)
+ax.set_xlim(0, 32)
+ax.set_yticks([0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+ax.tick_params(axis="both", labelsize=13)
 ax.grid(True, lw=0.5, alpha=0.35)
 
-model_leg = [Line2D([0], [0], marker="o", color="w",
-                    markerfacecolor=COL[m], markersize=14, label=LAB[m])
+model_leg = [Line2D([0], [0], marker=("s" if m in OPEN else "o"), color="w",
+                    markerfacecolor=COL[m], markersize=13, label=LAB[m])
              for m in ORDER]
-ax.legend(handles=model_leg, fontsize=14, loc="upper right",
-          title="Function-calling agents", title_fontsize=14,
+ax.legend(handles=model_leg, fontsize=12, loc="lower left",
           framealpha=0.95)
-
-# two short callouts distinguishing the co-optimal pair: Gemini fastest, GPT cheapest
-gpt, gem = pts["gpt"], pts["gemini"]
-gl = float(gem["mean_latency_s"]); pl = float(gpt["mean_latency_s"])
-ax.annotate("fastest", xy=(gl, 1.00), xytext=(gl - 0.5, 0.935),
-            fontsize=12, ha="center", color=COL["gemini"], fontweight="bold",
-            arrowprops=dict(arrowstyle="->", color=COL["gemini"], lw=1.8))
-ax.annotate("cheapest", xy=(pl, 1.00), xytext=(pl + 2.2, 0.915),
-            fontsize=12, ha="center", color=COL["gpt"], fontweight="bold",
-            arrowprops=dict(arrowstyle="->", color=COL["gpt"], lw=1.8))
 
 fig.tight_layout()
 fig.savefig("figs/fig2_pareto.pdf", bbox_inches="tight")

@@ -19,10 +19,16 @@ from matplotlib.colors import LinearSegmentedColormap
 
 os.makedirs("figs", exist_ok=True)
 
-MODELS = ["gpt", "gemini", "claude"]
+MODELS = ["gpt", "gemini", "claude", "llama-3.3", "qwen-3"]
 MODEL_LABELS = {"gpt": "GPT-4o-mini",
                 "gemini": "Gemini 2.5 Flash",
-                "claude": "Claude Sonnet 4.6"}
+                "claude": "Claude Sonnet 4.6",
+                "llama-3.3": "Llama-3.3 70B",
+                "qwen-3": "Qwen-3 32B"}
+
+# Index after which to draw a separator between commercial and open blocks.
+# (3 commercial models, then the open ones.)
+N_COMMERCIAL = 3
 
 FAMILIES = [
     ("S1", "deadline_conflict",       "success_rate"),
@@ -34,6 +40,17 @@ FAMILIES = [
 ]
 
 rows = list(csv.DictReader(open("data/results/exp2_main.csv")))
+
+# Guard: make sure every model we intend to plot is actually present in the CSV,
+# otherwise cell() would silently return 0.0 and draw a misleading all-pass row.
+models_in_csv = {r["model"] for r in rows}
+missing = [m for m in MODELS if m not in models_in_csv]
+if missing:
+    raise SystemExit(
+        f"ERROR: these models are not in exp2_main.csv: {missing}\n"
+        f"Present models: {sorted(models_in_csv)}\n"
+        f"Regenerate exp2_main.csv from the full exp2.jsonl (all 5 models) first."
+    )
 
 def cell(model, prompt, fam_key, metric):
     vals = []
@@ -57,7 +74,7 @@ GUIDED = np.array([[cell(m, "v2-guided", fk, mk) for _, fk, mk in FAMILIES]
 cmap = LinearSegmentedColormap.from_list(
     "wr", [(1,1,1), (1,0.85,0.75), (0.90,0.45,0.35), (0.75,0.10,0.10)])
 
-fig, axes = plt.subplots(1, 2, figsize=(8.6, 2.4),
+fig, axes = plt.subplots(1, 2, figsize=(8.6, 3.4),
                         gridspec_kw={"wspace": 0.06})
 
 fam_short = [f[0] for f in FAMILIES]
@@ -82,6 +99,8 @@ for k, (ax, arr) in enumerate([(axes[0], BASE), (axes[1], GUIDED)]):
     for spine in ax.spines.values():
         spine.set_visible(False)
     ax.tick_params(length=0)
+    # separator between commercial (top) and open-source (bottom) blocks
+    ax.axhline(N_COMMERCIAL - 0.5, color="0.30", linewidth=1.1)
 
 # small panel labels above each
 axes[0].set_title("(a) Baseline prompt", fontsize=9, pad=6, loc="center")

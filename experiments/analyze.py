@@ -33,11 +33,48 @@ def _load(exp: str) -> List[Dict]:
     if not log.exists():
         raise SystemExit(f"{log} missing -- run the experiment first")
     rows = [json.loads(l) for l in log.read_text().splitlines() if l.strip()]
+    # A retried run (e.g. after a transient DeepInfra 429) can appear more than
+    # once: an earlier errored attempt and a later successful one. Keep the
+    # last non-errored row per run_id; fall back to the last row if every
+    # attempt errored (so genuine persistent failures remain visible).
+    by_id: Dict[str, Dict] = {}
+    for r in rows:
+        rid = r.get("run_id")
+        if rid is None:
+            by_id[id(r)] = r                      # unkeyed rows: keep as-is
+            continue
+        prev = by_id.get(rid)
+        if prev is None or not r.get("error"):
+            by_id[rid] = r
+    rows = list(by_id.values())
     hashes = Counter(r.get("config_hash") for r in rows)
     if len(hashes) > 1:
-        keep = hashes.most_common(1)[0][0]
-        print(f"[warn] mixed config_hash {dict(hashes)}; keeping {keep} only")
-        rows = [r for r in rows if r.get("config_hash") == keep]
+        # By default, guard against accidental blends by keeping the majority
+        # hash only. For the documented open-model extension the closed and
+        # open runs are executed under two config hashes that differ ONLY by
+        # the added model entries + pricing (tariff, days, appliances,
+        # prompts, and scoring are byte-identical). To aggregate them together
+        # -- a deliberate, documented merge -- declare BOTH hashes explicitly
+        # via ANALYZE_CONFIG_HASHES (comma-separated). Nothing is merged that
+        # is not named on that allowlist.
+        import os
+        declared = os.getenv("ANALYZE_CONFIG_HASHES", "").strip()
+        if declared:
+            allow = {h.strip() for h in declared.split(",") if h.strip()}
+            present = set(hashes)
+            unknown = present - allow
+            if unknown:
+                raise SystemExit(
+                    f"config_hash {sorted(unknown)} present but not in "
+                    f"ANALYZE_CONFIG_HASHES={sorted(allow)}; refusing to "
+                    f"silently drop or blend. Add them explicitly if intended.")
+            print(f"[merge] aggregating declared config_hashes {sorted(present)}")
+            rows = [r for r in rows if r.get("config_hash") in allow]
+        else:
+            keep = hashes.most_common(1)[0][0]
+            print(f"[warn] mixed config_hash {dict(hashes)}; keeping {keep} "
+                  f"only (set ANALYZE_CONFIG_HASHES to merge deliberately)")
+            rows = [r for r in rows if r.get("config_hash") == keep]
     return rows
 
 
@@ -70,6 +107,27 @@ def analyze_exp1():
     out = []
     for (model, iface), rs in sorted(cells.items()):
         scores = [r["score"] for r in rs if r["score"]]
+        # Mean cost gap is computed over SUCCESSFUL runs only. A run that
+        # violates a hard constraint (e.g. EV finishing after its deadline) is
+        # already counted against the model via success_rate; its cost is not
+        # comparable to the constrained MILP optimum (it can even be "cheaper"
+        # than the optimum by using forbidden slots, producing a negative gap).
+        # Averaging such runs into the gap conflates constraint compliance with
+        # window-selection quality. Restricting to successful runs makes the gap
+        # mean exactly "of the valid schedules produced, how far from optimal",
+        # applied identically to every model so the comparison stays fair.
+        ok_gaps = [s["cost_gap"] for s in scores
+                   if s.get("success") and s.get("cost_gap") is not None]
+        # The gap distribution is fat-tailed: typical runs are near-optimal
+        # (median ~ 0) but rare large misses occur, especially for open models
+        # on negative-price days (e.g. one Qwen fc run at ~123% of optimum).
+        # A mean is a poor summary of such a distribution -- a single outlier
+        # dominates it and can even make a worse interface look better on the
+        # mean. We therefore report the MEDIAN as the robust central tendency,
+        # with mean and max beside it so the tail stays visible rather than
+        # hidden. All three are over successful runs only.
+        _med = (round(100 * st.median(ok_gaps), 3) if ok_gaps else None)
+        _mx = (round(100 * max(ok_gaps), 3) if ok_gaps else None)
         out.append({
             "model": model, "interface": iface, "n": len(rs),
             "success_rate": _rate([s["success"] for s in scores]),
@@ -77,9 +135,11 @@ def analyze_exp1():
             "near_optimal_rate": _rate(
                 [(s["cost_gap"] is not None and s["cost_gap"] <= 0.01)
                  for s in scores]),
-            "mean_cost_gap_pct": (round(100 * _mean(
-                [s["cost_gap"] for s in scores]), 3)
-                if scores else None),
+            "median_cost_gap_pct": _med,
+            "mean_cost_gap_pct": (round(100 * _mean(ok_gaps), 3)
+                                  if ok_gaps else None),
+            "max_cost_gap_pct": _mx,
+            "n_success_for_gap": len(ok_gaps),
             "mean_iters": _mean([r["iterations"] for r in rs]),
             "mean_tokens": _mean([r["tokens"]["input"] + r["tokens"]["output"]
                                   for r in rs]),
@@ -158,8 +218,12 @@ def apply_champion():
           if r["scenario"] == "multi" and r["interface"] == "fc" and r["score"]]
     e2 = _load("exp2")
     prim, tie = {}, {}
+    # Champion selection stays over the three closed models only: the champion
+    # drives Exp 3-noise and Exp 4b, which are not run for the open-weight
+    # models, so they are out of scope for this rule by construction.
+    CLOSED = ["gpt", "gemini", "claude"]
     for m in config.MODELS:
-        if m == "mock":
+        if m == "mock" or m not in CLOSED:
             continue
         s1 = [r["score"] for r in e1 if r["model"] == m]
         if not s1:
