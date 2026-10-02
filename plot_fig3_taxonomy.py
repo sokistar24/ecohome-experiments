@@ -3,14 +3,18 @@ Figure 3 --- Constraint-conflict failure heatmap: baseline vs guided prompt.
 
 Run from ecohome_experiments folder:
     python plot_fig3_taxonomy.py
-Reads: data/results/exp2_main.csv
-Output: figs/fig3_taxonomy.pdf + .png
+Reads: data/results/exp2_main.csv   (override with --csv)
+Output: figs/fig3_taxonomy.pdf + .png (override with --out, no extension)
+
+Revised (step A1) figure:
+    python plot_fig3_taxonomy.py --csv revision/outputs/a1_exp2_main_rescored.csv \
+        --out revision/outputs/fig3_taxonomy_rescored
 
 Cells are failure rate: for S1/S2/S3/S5/S6 this is 1 - success_rate;
 for S4 (infeasible-task family) it is 1 - infeasibility_reported_rate,
 since correct behavior is to REPORT infeasibility rather than commit.
 """
-import csv, os
+import argparse, csv, os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -39,7 +43,15 @@ FAMILIES = [
     ("S6", "tool_failure",            "success_rate"),
 ]
 
-rows = list(csv.DictReader(open("data/results/exp2_main.csv")))
+ap = argparse.ArgumentParser()
+ap.add_argument("--csv", default="data/results/exp2_main.csv",
+                help="Table 5 rates (default: original exp2_main.csv)")
+ap.add_argument("--out", default="figs/fig3_taxonomy",
+                help="output path without extension (.pdf and .png written)")
+args = ap.parse_args()
+os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
+
+rows = list(csv.DictReader(open(args.csv)))
 
 # Guard: make sure every model we intend to plot is actually present in the CSV,
 # otherwise cell() would silently return 0.0 and draw a misleading all-pass row.
@@ -117,6 +129,6 @@ key = ("S1 deadline  \u00b7  S2 power cap  \u00b7  S3 irregular calendar  "
        "\u00b7  S6 tool failure")
 fig.text(0.5, -0.06, key, ha="center", fontsize=7.5, style="italic")
 
-fig.savefig("figs/fig3_taxonomy.pdf", bbox_inches="tight")
-fig.savefig("figs/fig3_taxonomy.png", dpi=180, bbox_inches="tight")
-print("Saved figs/fig3_taxonomy.pdf and .png")
+fig.savefig(f"{args.out}.pdf", bbox_inches="tight")
+fig.savefig(f"{args.out}.png", dpi=180, bbox_inches="tight")
+print(f"Saved {args.out}.pdf and .png")

@@ -1,0 +1,16 @@
+regime,arm,net_cost,scr,n,non_commit,published_unbalanced
+overcast,Price-only agent,4.4768,0.4672,15 model-days,0/45,4.4768
+overcast,Weather-aware agent,4.5134,0.4939,15 model-days,3/45,4.3381
+overcast,Price-only MILP,4.4691,0.4569,5 days,,
+overcast,Weather-aware MILP (forecast),4.3783,0.5903,5 days,,
+overcast,Perfect-foresight MILP,4.3295,0.631,5 days,,
+mixed,Price-only agent,5.4407,0.5918,15 model-days,0/45,5.4407
+mixed,Weather-aware agent,5.4361,0.5927,15 model-days,5/45,5.4435
+mixed,Price-only MILP,5.4269,0.5684,5 days,,
+mixed,Weather-aware MILP (forecast),5.3321,0.778,5 days,,
+mixed,Perfect-foresight MILP,5.3048,0.762,5 days,,
+sunny,Price-only agent,3.5158,0.5937,15 model-days,0/45,3.5158
+sunny,Weather-aware agent,3.5623,0.6089,15 model-days,4/45,3.6621
+sunny,Price-only MILP,3.5172,0.5928,5 days,,
+sunny,Weather-aware MILP (forecast),3.3024,0.7748,5 days,,
+sunny,Perfect-foresight MILP,3.3024,0.7748,5 days,,

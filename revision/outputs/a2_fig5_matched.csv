@@ -1,0 +1,9 @@
+noise,mean_net_cost_realized,delta_vs_unperturbed,n_days
+accurate,4.5265,0.0,15
+price_only,4.4887,,15
+noise_50_m,4.5925,0.066,15
+noise_25_m,4.6083,0.0819,15
+noise_10_m,4.5295,0.003,14
+noise_10_p,4.527,0.0005,15
+noise_25_p,4.5846,0.0582,15
+noise_50_p,4.6057,0.0793,15

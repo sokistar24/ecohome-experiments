@@ -1,0 +1,7 @@
+experiment,model,n,price_only_milp,weather_milp,identical,other
+exp4a,gpt,21,12,0,6,3
+exp4a,gemini,18,5,0,4,9
+exp4a,claude,21,4,0,4,13
+exp3 weather-aware,gpt,45,33,0,3,9
+exp3 weather-aware,gemini,33,5,0,1,27
+exp3 weather-aware,claude,45,19,0,3,23

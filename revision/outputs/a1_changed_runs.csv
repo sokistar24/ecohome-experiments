@@ -1,0 +1,14 @@
+run_id,scenario,model,prompt,ev_start,ev_finish,old_deadline,new_deadline,before,after
+3a64fa8cfd15,S3b,gpt,v2-guided,00:30,06:30,06:00,06:30,False,True
+ffab0d928d8d,S3b,gemini,v1,00:30,06:30,06:00,06:30,False,True
+852617a4ff1f,S3b,gemini,v1,00:30,06:30,06:00,06:30,False,True
+86e876046cce,S3b,gemini,v1,00:30,06:30,06:00,06:30,False,True
+db6710d1d741,S3b,gemini,v2-guided,00:30,06:30,06:00,06:30,False,True
+f19becfeb820,S3b,gemini,v2-guided,00:30,06:30,06:00,06:30,False,True
+c72d87f273ee,S3b,gemini,v2-guided,00:30,06:30,06:00,06:30,False,True
+2662ebc13f5c,S3b,claude,v1,00:30,06:30,06:00,06:30,False,True
+3d1bdd6c6af6,S3b,claude,v1,00:30,06:30,06:00,06:30,False,True
+0e026ad98d33,S3b,claude,v1,00:30,06:30,06:00,06:30,False,True
+a07562536a37,S3b,claude,v2-guided,00:30,06:30,06:00,06:30,False,True
+0252f86a03f7,S3b,claude,v2-guided,00:30,06:30,06:00,06:30,False,True
+ec4cb4af4162,S3b,claude,v2-guided,00:30,06:30,06:00,06:30,False,True

@@ -1,0 +1,51 @@
+A5 -- metric definitions, absolute gaps and intervals
+
+Repeat agreement, Exp 1: all three repeats share the same success outcome in 108/120 model-interface-day cells (90%)
+Sanity check -- success, optimality, near-optimality and median gap reproduce exp1_main.csv for all 10 cells
+
+MILP reference cost J* across the 12 Exp 1 days: GBP 1.51 to 9.55 (never zero or negative); smallest on 2026-06-07
+Largest gap: qwen-3 fc on 2026-06-07: 122.86% = GBP 1.86 (J* = 1.51, agent 3.37)
+
+Table 4 extended (intervals: Wilson, unit = day):
+  model      if    success     95% CI  optimal     95% CI near-opt pub near-opt fixed   med £  max £   max %
+  gpt        fc       1.00  [76, 100]     1.00  [76, 100]         1.00           1.00   0.000   0.00    0.00
+  gpt        text     0.94   [68, 99]     0.31   [12, 58]         0.39           0.39   0.140   0.83   12.73
+  gemini     fc       1.00  [76, 100]     1.00  [76, 100]         1.00           1.00   0.000   0.00    0.00
+  gemini     text     0.92   [65, 99]     0.64   [37, 84]         0.89           0.89   0.000   0.08    1.97
+  claude     fc       1.00  [76, 100]     0.86   [58, 97]         0.97           0.97   0.000   0.33    4.42
+  claude     text     0.50   [25, 75]     0.33   [14, 61]         0.47           0.47   0.000   0.31    3.44
+  llama-3.3  fc       0.97  [72, 100]     0.36   [16, 63]         0.78           0.78   0.001   0.56    8.53
+  llama-3.3  text     0.81   [52, 94]     0.31   [12, 58]         0.75           0.67   0.002   0.53    5.57
+  qwen-3     fc       1.00  [76, 100]     0.72   [44, 90]         0.86           0.86   0.000   1.86  122.86
+  qwen-3     text     0.75   [47, 91]     0.47   [23, 72]         0.81           0.56   0.000   0.27    3.23
+  Near-optimality changes where constraint-violating runs had been counted: llama-3.3 text 0.75 -> 0.67, qwen-3 text 0.81 -> 0.56
+
+Function calling minus text-parsed actions (same days and repeats; bootstrap over days):
+  model       success, pp           95% CI  optimality, pp           95% CI
+  gpt                +5.6    [+0.0, +13.9]        +69.4   [+52.8, +83.3]
+  gemini             +8.3    [+0.0, +25.0]        +36.1   [+13.9, +61.1]
+  claude            +50.0   [+27.8, +72.2]        +52.8   [+30.6, +77.8]
+  llama-3.3         +16.7    [+0.0, +36.1]         +5.6   [-13.9, +25.0]
+  qwen-3            +25.0    [+0.0, +50.0]        +25.0    [-0.0, +52.8]
+
+Repeat agreement, Exp 2: 106/130 model-scenario-prompt cells (82%) have identical outcomes across repeats
+Aggregate compliance (A1 rule), Wilson interval with unit = scenario x prompt (26):
+  gpt         66.7%  95% CI [47, 82]
+  gemini      93.6%  95% CI [78, 98]
+  claude     100.0%  95% CI [87, 100]
+  llama-3.3   50.0%  95% CI [32, 68]
+  qwen-3      71.8%  95% CI [53, 85]
+
+GPT constraint-violating schedules on feasible scenarios (18 runs): mean GBP -2.47 vs the feasible optimum (mean J* = GBP 6.90). Replaces the -152.9% figure.
+
+Exp 3, value of weather information pooled over all 15 days (GBP/day, positive = cheaper; bootstrap over days):
+  weather-aware MILP vs price-only MILP   +0.133  95% CI [+0.063, +0.211]
+  weather-aware vs price-only agents      -0.026  95% CI [-0.058, +0.000]
+  difference (value the agents leave)     +0.160  95% CI [+0.074, +0.258]
+
+Sampling (from day_selection.json and fetch_archives.py):
+  window 2026-04-20 to 2026-06-20; 62 complete Agile days (48 slots) are candidates
+  Exp 1: ranked by coefficient of variation of import price; terciles split at CoV = 0.274 and 0.308; 4 days per tercile, evenly spaced in time; a negative-price day is swapped in if none is selected
+  Exp 3: forecast daytime (06-20 h) mean cloud cover < 30% sunny, > 70% overcast, otherwise mixed; 5 days per regime, evenly spaced in time
+  Exp 4a: first Monday-Sunday week fully covered by archived data
+  Note: day_selection.json records export_rate_gbp = 0.15, but all scoring uses config.EXPORT_RATE_GBP = 0.05; day selection does not use the export rate

@@ -1,0 +1,64 @@
+A2 -- Exp 3 re-analysis with MILP reference arms (realized net cost, GBP/day)
+
+Sanity check 1 -- MILP arms match baselines.json on all 15 days
+Sanity check 2 -- unbalanced agent means reproduce published Table 6
+
+Runs with no realized cost (did not commit all three appliances):
+  overcast  Weather-aware agent  gemini  3/15
+  mixed     Weather-aware agent  gemini  5/15
+  sunny     Weather-aware agent  gemini  4/15
+
+Matched comparison (agents averaged over the same model-days in both arms):
+  regime    arm                              net cost    SCR              n  non-commit  Table 6 as published
+  overcast  Price-only agent                    4.477  0.467  15 model-days        0/45                4.4768
+  overcast  Weather-aware agent                 4.513  0.494  15 model-days        3/45                4.3381
+  overcast  Price-only MILP                     4.469  0.457         5 days                                  
+  overcast  Weather-aware MILP (forecast)       4.378  0.590         5 days                                  
+  overcast  Perfect-foresight MILP              4.330  0.631         5 days                                  
+  mixed     Price-only agent                    5.441  0.592  15 model-days        0/45                5.4407
+  mixed     Weather-aware agent                 5.436  0.593  15 model-days        5/45                5.4435
+  mixed     Price-only MILP                     5.427  0.568         5 days                                  
+  mixed     Weather-aware MILP (forecast)       5.332  0.778         5 days                                  
+  mixed     Perfect-foresight MILP              5.305  0.762         5 days                                  
+  sunny     Price-only agent                    3.516  0.594  15 model-days        0/45                3.5158
+  sunny     Weather-aware agent                 3.562  0.609  15 model-days        4/45                3.6621
+  sunny     Price-only MILP                     3.517  0.593         5 days                                  
+  sunny     Weather-aware MILP (forecast)       3.302  0.775         5 days                                  
+  sunny     Perfect-foresight MILP              3.302  0.775         5 days                                  
+
+Value of weather information, GBP/day (positive = weather arm cheaper):
+  regime     MILP forecast  MILP perfect  agents matched  Table 6 published
+  overcast           0.091         0.140          -0.037              0.139
+  mixed              0.095         0.122           0.005             -0.003
+  sunny              0.215         0.215          -0.046             -0.146
+
+Self-consumption: weather-aware agent vs weather-aware MILP (matched agents):
+  overcast  agent SCR 0.494 vs MILP SCR 0.590; agent cost +0.135 GBP/day vs MILP
+  mixed     agent SCR 0.593 vs MILP SCR 0.778; agent cost +0.104 GBP/day vs MILP
+  sunny     agent SCR 0.609 vs MILP SCR 0.775; agent cost +0.260 GBP/day vs MILP
+
+Negative import prices (tests the current Sec. 5.4 explanation):
+  overcast  days with any negative slot 1/5, lowest price -0.047 GBP/kWh
+  mixed     days with any negative slot 0/5, lowest price 0.101 GBP/kWh
+  sunny     days with any negative slot 1/5, lowest price -0.014 GBP/kWh
+
+By model, matched (weather-aware minus price-only, GBP/day; SCR change):
+  overcast  gpt +0.111 (+0.056)   gemini -0.006 (+0.024)   claude +0.005 (+0.000)
+  mixed     gpt +0.003 (-0.000)   gemini -0.019 (+0.037)   claude +0.003 (-0.034)
+  sunny     gpt +0.000 (+0.000)   gemini +0.126 (+0.027)   claude +0.014 (+0.019)
+
+Figure 5 -- forecast-error sweep (champion: gpt):
+  Sanity check 3 -- all 270 noise-run labels verified against their run_ids
+  WARNING -- data/results/exp3_noise.csv disagrees with the run logs for: noise_10_p (csv 4.606, logs 4.734), noise_50_p (csv 4.734, logs 4.606)
+  The published Figure 5 was drawn from that CSV; the values below use the logs.
+  Zero point used in the published figure (3-model pooled mean): 4.481
+  gpt unperturbed weather-aware mean (15 days):            4.526
+  gpt price-only mean (15 days):                           4.489
+   error  logs, unmatched  matched delta  plotted  days
+  -  50%            4.592         +0.066    4.592    15
+  -  25%            4.557         +0.082    4.608    15
+  -  10%            4.518         +0.003    4.529    14
+  +  10%            4.734         +0.000    4.527    15
+  +  25%            4.634         +0.058    4.585    15
+  +  50%            4.606         +0.079    4.606    15
+  plotted = unperturbed mean + matched delta (each level vs the same days, unperturbed)

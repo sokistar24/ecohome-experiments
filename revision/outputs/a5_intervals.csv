@@ -1,0 +1,39 @@
+quantity,estimate,ci_low,ci_high,method
+Exp1 success gpt fc,1,0.758,1.0,"Wilson, n = 12 days"
+Exp1 optimality gpt fc,1,0.758,1.0,"Wilson, n = 12 days"
+Exp1 success gpt text,0.944,0.681,0.993,"Wilson, n = 12 days"
+Exp1 optimality gpt text,0.306,0.121,0.584,"Wilson, n = 12 days"
+Exp1 success gemini fc,1,0.758,1.0,"Wilson, n = 12 days"
+Exp1 optimality gemini fc,1,0.758,1.0,"Wilson, n = 12 days"
+Exp1 success gemini text,0.917,0.646,0.985,"Wilson, n = 12 days"
+Exp1 optimality gemini text,0.639,0.366,0.844,"Wilson, n = 12 days"
+Exp1 success claude fc,1,0.758,1.0,"Wilson, n = 12 days"
+Exp1 optimality claude fc,0.861,0.582,0.965,"Wilson, n = 12 days"
+Exp1 success claude text,0.5,0.254,0.746,"Wilson, n = 12 days"
+Exp1 optimality claude text,0.333,0.138,0.609,"Wilson, n = 12 days"
+Exp1 success llama-3.3 fc,0.972,0.717,0.998,"Wilson, n = 12 days"
+Exp1 optimality llama-3.3 fc,0.361,0.156,0.634,"Wilson, n = 12 days"
+Exp1 success llama-3.3 text,0.806,0.523,0.94,"Wilson, n = 12 days"
+Exp1 optimality llama-3.3 text,0.306,0.121,0.584,"Wilson, n = 12 days"
+Exp1 success qwen-3 fc,1,0.758,1.0,"Wilson, n = 12 days"
+Exp1 optimality qwen-3 fc,0.722,0.441,0.895,"Wilson, n = 12 days"
+Exp1 success qwen-3 text,0.75,0.468,0.911,"Wilson, n = 12 days"
+Exp1 optimality qwen-3 text,0.472,0.233,0.725,"Wilson, n = 12 days"
+Exp1 success FC - text gpt,0.056,0,0.139,paired bootstrap over 12 days
+Exp1 optimal FC - text gpt,0.694,0.528,0.833,paired bootstrap over 12 days
+Exp1 success FC - text gemini,0.083,0,0.25,paired bootstrap over 12 days
+Exp1 optimal FC - text gemini,0.361,0.139,0.611,paired bootstrap over 12 days
+Exp1 success FC - text claude,0.5,0.278,0.722,paired bootstrap over 12 days
+Exp1 optimal FC - text claude,0.528,0.306,0.778,paired bootstrap over 12 days
+Exp1 success FC - text llama-3.3,0.167,0.0,0.361,paired bootstrap over 12 days
+Exp1 optimal FC - text llama-3.3,0.056,-0.139,0.25,paired bootstrap over 12 days
+Exp1 success FC - text qwen-3,0.25,0,0.5,paired bootstrap over 12 days
+Exp1 optimal FC - text qwen-3,0.25,-0.0,0.528,paired bootstrap over 12 days
+Exp2 compliance gpt,0.667,0.475,0.816,"Wilson, n = 26 scenario x prompt cells"
+Exp2 compliance gemini,0.936,0.776,0.984,"Wilson, n = 26 scenario x prompt cells"
+Exp2 compliance claude,1,0.871,1.0,"Wilson, n = 26 scenario x prompt cells"
+Exp2 compliance llama-3.3,0.5,0.321,0.679,"Wilson, n = 26 scenario x prompt cells"
+Exp2 compliance qwen-3,0.718,0.526,0.854,"Wilson, n = 26 scenario x prompt cells"
+"Exp3 weather value, MILP",0.133,0.063,0.211,bootstrap over 15 days
+"Exp3 weather value, agents (matched)",-0.026,-0.058,0.0,bootstrap over 15 days
+Exp3 MILP minus agents,0.16,0.074,0.258,bootstrap over 15 days

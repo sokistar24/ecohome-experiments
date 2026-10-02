@@ -1,0 +1,37 @@
+A3 -- Exp 4a seven-day deployment (2026-04-20 to 2026-04-26)
+
+Sanity check -- all eight published Table 7 costs reproduced
+
+Agent non-commits (passes with no full schedule; that day averages the other passes):
+  gpt     0/21
+  gemini  3/21
+  claude  0/21
+
+Rule-based baselines -- EV deadline (18:00) met on how many of the 7 days:
+  Immediate start                  0/7
+  Off-peak timer                   7/7
+  Greedy cheapest-slot heuristic   0/7
+
+Weather value available in the week: price-only MILP 24.62 - oracle 24.10 = GBP 0.52 (perfect foresight: GBP 0.57)
+
+  policy                            7-day £  deadline  timer->oracle %  weather value % non-commit
+  Immediate start                     72.13       0/7            -76.8                            
+  Off-peak timer                      51.27       7/7              0.0                            
+  Greedy cheapest-slot heuristic      55.33       0/7            -14.9                            
+  Price-only MILP                     24.62       7/7             98.1              0.0           
+  Weather-aware MILP (oracle)         24.10       7/7            100.0            100.0           
+  Perfect-foresight MILP              24.05       7/7            100.2            108.5           
+  GPT-4o-mini agent                   24.63       7/7             98.0             -2.2       0/21
+  Gemini 2.5 Flash agent              24.77       7/7             97.5            -29.2       3/21
+  Claude Sonnet 4.6 agent             25.00       7/7             96.7            -73.8       0/21
+
+Schedule match: committed schedule vs the two MILP schedules for that day
+  ('identical' = the two MILPs choose the same schedule that day)
+  exp4a:
+    gpt     n= 21  price-only MILP  12  weather MILP   0  identical   6  other   3
+    gemini  n= 18  price-only MILP   5  weather MILP   0  identical   4  other   9
+    claude  n= 21  price-only MILP   4  weather MILP   0  identical   4  other  13
+  exp3 weather-aware:
+    gpt     n= 45  price-only MILP  33  weather MILP   0  identical   3  other   9
+    gemini  n= 33  price-only MILP   5  weather MILP   0  identical   1  other  27
+    claude  n= 45  price-only MILP  19  weather MILP   0  identical   3  other  23

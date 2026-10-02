@@ -1,0 +1,29 @@
+A4 -- Exp 2 violation severity (deadline = stated time, as in A1)
+
+Cross-check -- severity measures agree with A1 scorer violations on 390/390 runs
+
+Outcome counts per model (both prompts, 78 runs each):
+  model              correct  invalid commit      incomplete       no action
+  gpt                     52              21               5               0
+  gemini                  73               1               0               4
+  claude                  78               0               0               0
+  llama-3.3               39              14               0              25
+  qwen-3                  56              16               4               2
+
+Invalid commits per model (both prompts). Severity columns cover feasible
+scenarios (S1-S3, S5, S6); S4 fabrications are counted separately.
+  model       invalid/committing  S4 fab.  late runs  max late h  median late h  cap runs  max kW over  quiet runs
+  gpt                      21/74        3          6         9.0            9.0        12          2.2           0
+  gemini                    1/70        0          1         8.5            8.5         0          0.0           0
+  claude                    0/78        0          0         0.0            0.0         0          0.0           0
+  llama-3.3                14/50        6          2         7.5            7.5         3          2.2           4
+  qwen-3                   16/71        7          9         9.5            9.0         0          0.0           0
+  all                     52/343
+
+Where the violations occur (feasible scenarios; model x runs, severity):
+  S2a  gpt x6 (2.2 kW over cap), llama-3.3 x1 (0.4 kW over cap), llama-3.3 x2 (2.2 kW over cap)
+  S2b  gpt x6 (2.2 kW over cap)
+  S3b  qwen-3 x3 (9.5 h late)
+  S3c  llama-3.3 x4 (30 min before quiet hours end), llama-3.3 x2 (7.5 h late)
+  S5   gemini x1 (8.5 h late), gpt x6 (9.0 h late), qwen-3 x6 (9.0 h late)
+

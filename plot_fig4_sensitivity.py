@@ -5,18 +5,29 @@ Run from ecohome_experiments folder:
 Reads: data/results/exp3_noise.csv, data/results/exp3_main.csv
 Output: figs/fig4_sensitivity.pdf + .png
 
+Revised (step A2) figure, champion-only and matched by day:
+    python plot_fig4_sensitivity.py --noise-csv revision/outputs/a2_fig5_matched.csv \
+        --out revision/outputs/fig5_sensitivity_matched --legend-loc below
+If the noise CSV has rows "accurate" and "price_only", they replace the
+pooled references taken from exp3_main.csv.
+
 Signed x-axis: accurate forecast at 0 (mean weather-aware cost), under-
 forecast (negative noise) to the left, over-forecast (positive) to the
-right. Every perturbed point lies above the accurate baseline, as it
-must; the right (over-forecast) arm rises faster than the left, and the
-price-only mean is drawn as a reference.
+right; the price-only mean is drawn as a reference.
 """
-import csv, os
+import argparse, csv, os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-os.makedirs("figs", exist_ok=True)
+ap = argparse.ArgumentParser()
+ap.add_argument("--noise-csv", default="data/results/exp3_noise.csv")
+ap.add_argument("--legend-loc", default="upper left",
+                help='matplotlib location, or "below" to place it under the axes')
+ap.add_argument("--out", default="figs/fig4_sensitivity",
+                help="output path without extension (.pdf and .png written)")
+args = ap.parse_args()
+os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
 
 # --- references from the main exp3 table (mean across regimes) -----------
 main = list(csv.DictReader(open("data/results/exp3_main.csv")))
@@ -28,7 +39,12 @@ accurate_wa = mean_of("weather_aware")
 price_only  = mean_of("price_only")
 
 # --- noise sweep ---------------------------------------------------------
-noise = list(csv.DictReader(open("data/results/exp3_noise.csv")))
+noise = list(csv.DictReader(open(args.noise_csv)))
+for r in noise:                      # optional overrides (revision CSV)
+    if r["noise"] == "accurate":
+        accurate_wa = float(r["mean_net_cost_realized"])
+    elif r["noise"] == "price_only":
+        price_only = float(r["mean_net_cost_realized"])
 def ncost(tag):
     for r in noise:
         if r["noise"] == tag:
@@ -73,9 +89,13 @@ ax.set_xticklabels(["\u221250", "\u221225", "\u221210", "0",
                     "+10", "+25", "+50"], fontsize=14)
 ax.tick_params(axis="y", labelsize=14)
 ax.grid(True, lw=0.5, alpha=0.35)
-ax.legend(fontsize=14, loc="upper left", framealpha=0.95)
+if args.legend_loc == "below":        # outside the axes, one row
+    ax.legend(fontsize=12, loc="upper center", bbox_to_anchor=(0.5, -0.2),
+              ncol=3, framealpha=0.95, handletextpad=0.3, columnspacing=1.0)
+else:
+    ax.legend(fontsize=14, loc=args.legend_loc, framealpha=0.95)
 
 fig.tight_layout()
-fig.savefig("figs/fig4_sensitivity.pdf", bbox_inches="tight")
-fig.savefig("figs/fig4_sensitivity.png", dpi=180, bbox_inches="tight")
-print("Saved figs/fig4_sensitivity.pdf and .png")
+fig.savefig(f"{args.out}.pdf", bbox_inches="tight")
+fig.savefig(f"{args.out}.png", dpi=180, bbox_inches="tight")
+print(f"Saved {args.out}.pdf and .png")

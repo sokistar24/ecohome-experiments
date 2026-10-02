@@ -1,0 +1,39 @@
+A1 -- Exp 2 rescoring without the unstated 30-min departure buffer
+runs: 390
+
+Scenarios that applied the buffer (deadline = calendar time - 30 min):
+  S3a: calendar time 19:00, scored deadline 18:30 -> rescored deadline 19:00
+  S3b: calendar time 06:30, scored deadline 06:00 -> rescored deadline 06:30
+  S5: calendar time 07:00, scored deadline 06:30 -> rescored deadline 07:00
+
+Sanity check -- original scoring reproduced for 390/390 runs
+
+Does the deadline conflict still bind after rescoring?
+  S3a: cheapest unconstrained EV window ends 16:00; old deadline 18:30 does NOT bind, new deadline 19:00 does NOT bind
+  S3b: cheapest unconstrained EV window ends 16:00; old deadline 06:00 binds, new deadline 06:30 binds
+  S5: cheapest unconstrained EV window ends 16:00; old deadline 06:30 binds, new deadline 07:00 binds
+
+Runs whose outcome changes: 13
+  S3b  claude     False->True  x6
+  S3b  gemini     False->True  x6
+  S3b  gpt        False->True  x1
+
+Table 5 (baseline / guided). Only cells that change are listed:
+  gpt        S3:  0.67 / 0.67  ->  0.67 / 0.78
+  gemini     S3:  0.67 / 0.67  ->  1.00 / 1.00
+  claude     S3:  0.67 / 0.67  ->  1.00 / 1.00
+
+Aggregate compliance per model (all 78 runs):
+  gpt        51/78 (65%)  ->  52/78 (67%)
+  gemini     67/78 (86%)  ->  73/78 (94%)
+  claude     72/78 (92%)  ->  78/78 (100%)
+  llama-3.3  39/78 (50%)  ->  39/78 (50%)
+  qwen-3     56/78 (72%)  ->  56/78 (72%)
+
+Full rescored Table 5 (baseline / guided):
+  model                 S1            S2            S3            S4            S5            S6
+  gpt          1.00 / 1.00   0.00 / 0.00   0.67 / 0.78   0.50 / 1.00   0.00 / 0.00   1.00 / 1.00
+  gemini       0.92 / 1.00   1.00 / 1.00   1.00 / 1.00   1.00 / 0.83   0.33 / 1.00   0.67 / 1.00
+  claude       1.00 / 1.00   1.00 / 1.00   1.00 / 1.00   1.00 / 1.00   1.00 / 1.00   1.00 / 1.00
+  llama-3.3    0.67 / 0.58   0.50 / 0.67   0.56 / 0.33   0.50 / 0.00   0.67 / 0.00   1.00 / 0.33
+  qwen-3       0.75 / 0.92   1.00 / 1.00   0.67 / 1.00   0.17 / 0.67   0.00 / 0.00   1.00 / 0.33
