@@ -309,4 +309,28 @@ def exp3_hybrid_specs(pilot: bool = False) -> List[Dict]:
     return specs
 
 
-GRIDS = {"exp2-hybrid": exp2_hybrid_specs, "exp3-hybrid": exp3_hybrid_specs}
+def exp2_drift_specs(pilot: bool = False) -> List[Dict]:
+    """Optional provider-drift check: the DIRECT agent with the guided prompt,
+    repeat 0 of every Exp 2 scenario and model, rerun at the time of the hybrid
+    runs. Comparing with the July repeat-0 outcomes shows whether the models
+    behind the same identifiers changed between the direct and hybrid runs.
+    Identical specs to experiments.grids.exp2_specs except exp/run_id."""
+    from experiments.grids import exp2_specs
+    from experiments.runner import run_id
+    out = []
+    for s in exp2_specs():
+        if s["prompt_version"] != "v2-guided" or s["rep"] != 0:
+            continue
+        if pilot and s["scenario"] not in PILOT_EXP2:
+            continue
+        s = dict(s)
+        s["exp"] = "exp2-drift"
+        s["run_id"] = run_id(exp="exp2-drift", scenario=s["scenario"], model=s["model"],
+                             interface="fc", day=s["day"], rep=0, pv=s["prompt_version"])
+        s["hybrid_use_pv"] = False
+        out.append(s)
+    return out
+
+
+GRIDS = {"exp2-hybrid": exp2_hybrid_specs, "exp3-hybrid": exp3_hybrid_specs,
+         "exp2-drift": exp2_drift_specs}

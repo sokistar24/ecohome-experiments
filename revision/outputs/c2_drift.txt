@@ -1,0 +1,10 @@
+C2 -- provider drift check: 65 October reruns (2026-10-04 to 2026-10-05) vs July repeat 0, direct agent, guided prompt
+  model       July correct  Oct correct  Oct = July  July rep0 = rep1/2
+  gpt               10/13        10/13       13/13              24/26 
+  gemini            13/13        13/13       13/13              25/26 
+  claude            13/13        12/13       12/13              26/26 
+  llama-3.3          3/13         3/13        7/13              18/26 
+  qwen-3             9/13        11/13       11/13              22/26 
+  all               48/65        49/65       56/65             115/130
+October agrees with July in 86% of runs; July repeats agree with each other in 88%.
+Changed outcomes (model, scenario, July -> October): claude S4b ok->fail, llama-3.3 S1b fail->ok, llama-3.3 S1c ok->fail, llama-3.3 S2b ok->fail, llama-3.3 S3a ok->fail, llama-3.3 S3b fail->ok, llama-3.3 S3c fail->ok, qwen-3 S1d fail->ok, qwen-3 S6 fail->ok

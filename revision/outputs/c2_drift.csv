@@ -1,0 +1,6 @@
+model,july_correct,oct_correct,n,oct_equals_july,july_rep0_equals_rep12,july_pairs
+gpt,10,10,13,13,24,26
+gemini,13,13,13,13,25,26
+claude,13,12,13,12,26,26
+llama-3.3,3,3,13,7,18,26
+qwen-3,9,11,13,11,22,26

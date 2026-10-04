@@ -204,3 +204,46 @@ Design (state in the paper's Methods):
     Add a hybrid column to Table 6 (`b3_exp3.tex`).
 - Narrative for Phase C: LLMs should interpret and optimisers should decide; interpretation
   is the remaining risk, and validation must check against the right constraints.
+
+
+## Phase C: paper rewrite
+
+| Step | Command | Status |
+|---|---|---|
+| C0 Paper assets (all tables and figures) | `python -m revision.c0_paper_assets`, then compile `revision/outputs/paper/assets_preview.tex` | done |
+| C1 Methods | (LaTeX); numbers from `python -m revision.c1_coupling_check` | done |
+| C2 Results, Discussion, Limitations | (LaTeX); drift numbers from `python -m revision.c2_drift_check` | done |
+| C3 Introduction, contributions, Related Work | (LaTeX) | |
+| C4 Abstract, title, conclusion, appendices, consistency pass | (LaTeX) | |
+
+C0 reruns A1-A5 and B3, then writes LaTeX `tabular` blocks and PDF figures to
+`revision/outputs/paper/`. Captions and labels stay in `article.tex`; copy the folder into
+the LaTeX project as `results/revision/`.
+
+| Asset | Paper element |
+|---|---|
+| `tab_exp1.tex` | Table: task completion and action interface (Exp 1) |
+| `tab_exp2_arms.tex` | Table: direct / guard / hybrid under constraint conflict |
+| `tab_hybrid_fail.tex` | Table: sources of hybrid failures |
+| `tab_exp3.tex` | Table: weather value, agents vs hybrid vs MILP references |
+| `tab_exp4a.tex` | Table: seven-day deployment |
+| `tab_exp2_prompts.tex` | Appendix table: direct agent, baseline/guided prompt, severity |
+| `fig_efficiency.pdf` | Fig. 2: correct behaviour vs cost per correct schedule, direct to hybrid |
+| `fig_direct_vs_hybrid.pdf` | Fig. 3: failure rate by scenario family, direct vs hybrid |
+| `fig_sunny_day.pdf` | Fig. 4: one sunny day, schedules of each arm (selection rule: the sunny day on which the forecast is worth most to the MILP; direct lanes show each model's modal schedule) |
+
+Note for C2: the submitted Fig. 4 (`plot_fig_money.py`) drew hard-coded illustrative
+schedules, not logged runs. The new Fig. 4 is drawn from the logs.
+
+**C1 (Methods)**: new Sections 3-5 in `article.tex` (formulation and ground truth, three
+placements of the LLM with the TikZ Fig. 1 `figs/fig_architecture.tex`, evaluation design).
+The coupling numbers quoted in Section 3.2 come from `revision/c1_coupling_check.py`.
+Optional provider-drift check (direct agent, guided prompt, repeat 0, rerun at hybrid time):
+`python -m revision.run_hybrid --exp exp2-drift --max-cost 3` (65 runs, about $1.60).
+
+**C2 (Results and Discussion)**: Section 6 (Results) and Section 7 (Discussion with
+Limitations) rewritten around RQ1-RQ4. Appendix B corrected (S5 is a 07:00 departure; S3/S4
+cases described; deadline rule; S3a does not bind). The weekly-planning appendix is removed;
+a new appendix holds the baseline/guided table with severity. Provider drift: October reruns
+of the direct agent (`data/runs/exp2-drift.jsonl`) agree with July in 86% of runs vs 88%
+between July repeats (`revision/c2_drift_check.py`).
