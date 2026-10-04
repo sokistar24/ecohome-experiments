@@ -1,0 +1,77 @@
+B3 -- direct vs guard vs hybrid. Exp 2: 195 direct-guided runs, 195 hybrid runs
+Paired by model x scenario x repeat: 195 pairs
+Sanity check -- replayed optimizer inputs reproduce the logged commitment in 195/195 hybrid runs
+
+Exp 2 correct-behaviour rate (A1 rule), 39 runs per cell; 95% Wilson interval with
+unit = scenario (13):
+  model                     direct                 guard                hybrid         hybrid - direct
+  gpt               72% [ 45,  89]        87% [ 61,  97]        82% [ 55,  94]        +10 pp [-13,+33]
+  gemini            97% [ 73, 100]        97% [ 73, 100]       100% [ 77, 100]           +3 pp [+0,+8]
+  claude           100% [ 77, 100]       100% [ 77, 100]       100% [ 77, 100]           +0 pp [+0,+0]
+  llama-3.3         38% [ 18,  64]        59% [ 33,  81]        90% [ 64,  98]        +51 pp [+31,+69]
+  qwen-3            79% [ 52,  93]        64% [ 38,  84]        64% [ 38,  84]        -15 pp [-41,+10]
+
+By scenario family, correct rate (direct / guard / hybrid):
+  model                   S1              S2              S3              S4              S5              S6
+  gpt         1.00/1.00/1.00  0.00/0.33/0.33  0.78/0.89/1.00  1.00/1.00/0.83  0.00/1.00/1.00  1.00/1.00/0.33
+  gemini      1.00/1.00/1.00  1.00/1.00/1.00  1.00/1.00/1.00  0.83/0.83/1.00  1.00/1.00/1.00  1.00/1.00/1.00
+  claude      1.00/1.00/1.00  1.00/1.00/1.00  1.00/1.00/1.00  1.00/1.00/1.00  1.00/1.00/1.00  1.00/1.00/1.00
+  llama-3.3   0.58/0.58/1.00  0.67/1.00/1.00  0.33/0.67/0.89  0.00/0.50/1.00  0.00/0.00/0.00  0.33/0.33/1.00
+  qwen-3      0.92/0.75/0.75  1.00/1.00/1.00  1.00/0.11/0.11  0.67/1.00/1.00  0.00/0.00/0.00  0.33/1.00/1.00
+
+Paired outcomes, direct vs hybrid (same model, scenario, repeat):
+  gpt        both correct 25  fixed by hybrid  7  broken by hybrid  3  both wrong  4
+  gemini     both correct 38  fixed by hybrid  1  broken by hybrid  0  both wrong  0
+  claude     both correct 39  fixed by hybrid  0  broken by hybrid  0  both wrong  0
+  llama-3.3  both correct 15  fixed by hybrid 20  broken by hybrid  0  both wrong  4
+  qwen-3     both correct 21  fixed by hybrid  4  broken by hybrid 10  both wrong  4
+
+Invalid commits on feasible scenarios (a committed schedule breaking a stated constraint):
+  gpt        direct  9 (worst 9.0 h late)   hybrid  0 (worst 0.0 h late)
+  gemini     direct  0 (worst 0.0 h late)   hybrid  0 (worst 0.0 h late)
+  claude     direct  0 (worst 0.0 h late)   hybrid  0 (worst 0.0 h late)
+  llama-3.3  direct  5 (worst 7.5 h late)   hybrid  3 (worst 9.0 h late)
+  qwen-3     direct  3 (worst 9.0 h late)   hybrid  3 (worst 9.0 h late)
+
+Why hybrid runs fail (each failed hybrid run, first matching cause):
+    6  interpretation: missed or loosened the EV deadline  [llama-3.3 3, qwen-3 3]
+    6  interpretation: added constraint(s) -> false infeasibility (power cap)  [qwen-3 6]
+    5  interpretation: added constraint(s) -> false infeasibility (ev_charger earliest start)  [llama-3.3 1, qwen-3 4]
+    4  interpretation: added constraint(s) -> false infeasibility (washing_machine deadline)  [gpt 4]
+    2  tool failure not retried  [gpt 2]
+    1  no optimizer call  [gpt 1]
+    1  interpretation: added constraint(s) -> false infeasibility (ev_charger earliest start, power cap, washing_machine deadline)  [qwen-3 1]
+  hybrid failures in total: 25
+
+Extraction accuracy on the binding constraints (hybrid runs that called the optimizer):
+  gpt        EV deadline  36/36  cap   6/6  spurious cap   0/30  quiet hours  3/3  all three scheduled  34/36
+  gemini     EV deadline  33/33  cap   6/6  spurious cap   0/27  quiet hours  3/3  all three scheduled  33/33
+  claude     EV deadline  33/34  cap   6/6  spurious cap   0/28  quiet hours  3/3  all three scheduled  33/34
+  llama-3.3  EV deadline  32/36  cap   6/6  spurious cap   0/30  quiet hours  3/3  all three scheduled  36/36
+  qwen-3     EV deadline  32/39  cap   9/9  spurious cap   7/30 (4.0 kW)  quiet hours  3/3  all three scheduled  39/39
+  (the household context line reads 'Household: 4 kWp rooftop solar', i.e. PV size, not a grid limit)
+
+Guard actions on the direct runs (pass / repair / block) and effect:
+  gpt        pass 26  repair  6  block  7  -> fixed  6, broke  0
+  gemini     pass 39  repair  0  block  0  -> fixed  0, broke  0
+  claude     pass 39  repair  0  block  0  -> fixed  0, broke  0
+  llama-3.3  pass 31  repair  5  block  3  -> fixed  8, broke  0
+  qwen-3     pass 24  repair  2  block 13  -> fixed  4, broke 10
+
+Efficiency per run, Exp 2 (direct-guided vs hybrid):
+  gpt        direct   16364 tok   8.5 s $0.0037/correct   hybrid    3619 tok   4.8 s $0.0008/correct
+  gemini     direct   23169 tok  17.1 s $0.0151/correct   hybrid    3183 tok   4.9 s $0.0018/correct
+  claude     direct   21870 tok  30.8 s $0.0846/correct   hybrid    4999 tok  11.8 s $0.0221/correct
+  llama-3.3  direct   27700 tok  44.2 s $0.0097/correct   hybrid    4102 tok  13.1 s $0.0006/correct
+  qwen-3     direct   30936 tok   6.6 s $0.0040/correct   hybrid    3158 tok   8.0 s $0.0005/correct
+
+Exp 3: 135 hybrid runs; non-commits gpt 0/45, gemini 0/45, claude 0/45; schedule identical to the weather-aware MILP in gpt 44/45, gemini 45/45, claude 45/45
+Realized net cost, GBP/day (agent arms matched over model-days present in all three):
+  regime     price-only agent  weather agent   hybrid  PO MILP  WA MILP  hybrid captures
+  overcast              4.477          4.513    4.382    4.469    4.378              96%
+  mixed                 5.441          5.436    5.332    5.427    5.332             100%
+  sunny                 3.516          3.562    3.302    3.517    3.302             100%
+Value of the forecast relative to the price-only agent, pooled over 15 days (GBP/day; bootstrap over days):
+  hybrid          +0.139  95% CI [+0.069, +0.216]
+  weather agents  -0.026  95% CI [-0.058, +0.000]
+  tokens per run: weather agents 22547, hybrid 4031; cost per run: $0.0408 vs $0.0076

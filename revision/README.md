@@ -136,3 +136,71 @@ Outputs go to `revision/outputs/` (tracked in git, unlike `data/` and `figs/`).
 - Decision for Phase C: cut 5.5.2 and Appendix C, or keep two sentences reporting the
   negative result (it supports the case for a deterministic layer). Do not keep the
   current text.
+
+
+## Phase B: hybrid arm (LLM extracts requirements, MILP schedules)
+
+Code: `revision/hybrid.py` (tool, prompt, grids) and `revision/run_hybrid.py` (runner).
+The original harness is untouched: runs go through `experiments.runner.execute()`, so
+logs have the same schema, scoring and resume behaviour. `config.py` is unchanged,
+so the config hash is unchanged.
+
+Design (state in the paper's Methods):
+- The hybrid agent gets two tools: `optimize_schedule` and `report_infeasibility`. It
+  never sees prices and never picks a slot. It passes, per appliance, `not_before` /
+  `finish_by` ('HH:MM') and an optional `power_cap_kw`; the tool solves the MILP and
+  commits. If no feasible schedule exists, the tool records infeasibility itself and
+  commits nothing.
+- Each call adds or updates the appliances it lists (latest wins per appliance; latest
+  non-null cap wins), then the MILP re-optimises all registered appliances jointly.
+  The final schedule depends only on the requirements passed, not on call order.
+  A lock serialises parallel tool calls.
+- Prompt `v3.1-hybrid`: same role, appliance list, deadline rule and guided conflict-rule
+  text as `v2-guided`, plus the time convention (times refer to the scheduled day, as in
+  the direct prompt's slot convention). Only the workflow changes. Compare against
+  direct-guided runs.
+- Pilot history: the first pilot (`v3-hybrid`, logs kept as `*.pilot-v3.jsonl`) used
+  "each call replaces the schedule". GPT-4o-mini issued one call per appliance in
+  parallel, LangGraph ran them in threads, and the final schedule depended on thread
+  timing (S1a, S6). The prompt also lacked the time convention: GPT and Qwen passed
+  "not before 20:00" meaning the previous evening. Both were fixed in v3.1 before
+  the full run.
+- The optimizer objective matches each experiment's scoring: price-only for Exp 2,
+  net cost with forecast PV and export for Exp 3.
+- S6 (tool failure) injects the one-off failure into `optimize_schedule`.
+
+| Step | Command | Status |
+|---|---|---|
+| B1 Offline self-test (no API calls) | `python -m revision.run_hybrid --selftest` | done |
+| B1 Pilot (39 runs; rerun after the v3.1 fix) | `python -m revision.run_hybrid --exp exp2-hybrid --pilot --max-cost 2` and `--exp exp3-hybrid --pilot --max-cost 1` | done |
+| B2 Full runs (195 + 135) | `python -m revision.run_hybrid --exp exp2-hybrid --max-cost 5`, `--exp exp3-hybrid --max-cost 5` | done: 330 runs, 0 errors, ~$2.03 |
+| B3 Analysis: direct vs guard vs hybrid, failure causes, extraction accuracy, Exp 3 | `python -m revision.b3_hybrid_analysis`, then the `plot_fig3_taxonomy.py ... --left-prompt direct --right-prompt hybrid` command in its docstring | done |
+
+**B3 (paper changes for Phase C)**
+- New table `b3_exp2_arms.tex` (direct / guard / hybrid, 95% CIs, tokens, $/correct) and new
+  figure `fig_direct_vs_hybrid.pdf`. These become the core of Section 5.3 or a new section.
+- Methods: describe the guard. It checks each committed schedule against the constraints the
+  same model extracted in structured form, repairs violations with the optimizer, blocks
+  commits when those constraints are infeasible, and keeps the agent's own infeasibility
+  reports.
+- Findings (A1 rule; 39 paired runs per model):
+  - Correct rate, direct -> hybrid: Llama 38% -> 90% (+51 pp [31, 69]); GPT 72 -> 82
+    (+10 [-13, 33]); Gemini 97 -> 100; Claude 100 -> 100; Qwen 79 -> 64 (-15 [-41, 10]).
+  - The optimizer removes action errors. Invalid commits on feasible scenarios: GPT 9 -> 0
+    (its cap violations and 9 h overruns disappear). Llama's and Qwen's remaining 3 each are
+    S5 runs where the model dropped the deadline before calling the optimizer.
+  - It does not remove interpretation errors. Of 25 hybrid failures, 22 come from passing a
+    wrong constraint and 3 are protocol errors (GPT: S6 failure not retried x2, no call on
+    S4b). Qwen reads "4 kWp rooftop solar" as a 4 kW grid cap (7 runs) and invents EV
+    earliest-start times. GPT adds a washing-machine deadline that makes S2 infeasible. Both
+    open models drop the S5 departure under both architectures.
+  - Guard: GPT 72 -> 87, Llama 38 -> 59, Qwen 79 -> 64. A validator is only as reliable as
+    the constraints it checks: Qwen's spurious constraints block 10 valid direct schedules.
+  - Efficiency: the hybrid uses 3.2-5.0k tokens per run vs 16-31k direct, and $/correct is
+    4-16x lower. Latency is lower for four of five models.
+  - Exp 3: the hybrid captures 96-100% of the forecast's value. Its schedule is identical to
+    the weather-aware MILP in 134/135 runs, with 0 non-commits. Value vs the price-only agent:
+    +GBP 0.139/day [0.069, 0.216]; the direct weather agents get -0.026 [-0.058, 0.000].
+    Add a hybrid column to Table 6 (`b3_exp3.tex`).
+- Narrative for Phase C: LLMs should interpret and optimisers should decide; interpretation
+  is the remaining risk, and validation must check against the right constraints.

@@ -1,0 +1,6 @@
+model,spurious_cap_values_kw,ev_deadline_exact,power_cap_exact,spurious_cap,quiet_hours_exact,all_three_scheduled
+gpt,,36/36,6/6,0/30,3/3,34/36
+gemini,,33/33,6/6,0/27,3/3,33/33
+claude,,33/34,6/6,0/28,3/3,33/34
+llama-3.3,,32/36,6/6,0/30,3/3,36/36
+qwen-3,4.0,32/39,9/9,7/30,3/3,39/39

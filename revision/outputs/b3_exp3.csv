@@ -1,0 +1,4 @@
+regime,price_only_agent,weather_aware_agent,hybrid,price_only_milp,weather_aware_milp,hybrid_weather_value_captured_pct,model_days
+overcast,4.477,4.513,4.382,4.469,4.378,96.0,15
+mixed,5.441,5.436,5.332,5.427,5.332,100.0,15
+sunny,3.516,3.562,3.302,3.517,3.302,100.0,15

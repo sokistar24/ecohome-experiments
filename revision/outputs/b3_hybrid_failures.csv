@@ -1,0 +1,26 @@
+model,scenario,rep,cause
+gpt,S2a,2,interpretation: added constraint(s) -> false infeasibility (washing_machine deadline)
+gpt,S2b,0,interpretation: added constraint(s) -> false infeasibility (washing_machine deadline)
+gpt,S2b,1,interpretation: added constraint(s) -> false infeasibility (washing_machine deadline)
+gpt,S2b,2,interpretation: added constraint(s) -> false infeasibility (washing_machine deadline)
+gpt,S4b,0,no optimizer call
+gpt,S6,0,tool failure not retried
+gpt,S6,1,tool failure not retried
+llama-3.3,S3b,0,interpretation: added constraint(s) -> false infeasibility (ev_charger earliest start)
+llama-3.3,S5,0,interpretation: missed or loosened the EV deadline
+llama-3.3,S5,1,interpretation: missed or loosened the EV deadline
+llama-3.3,S5,2,interpretation: missed or loosened the EV deadline
+qwen-3,S1a,0,interpretation: added constraint(s) -> false infeasibility (power cap)
+qwen-3,S1d,0,interpretation: added constraint(s) -> false infeasibility (power cap)
+qwen-3,S1d,2,interpretation: added constraint(s) -> false infeasibility (power cap)
+qwen-3,S3a,1,interpretation: added constraint(s) -> false infeasibility (ev_charger earliest start)
+qwen-3,S3a,2,interpretation: added constraint(s) -> false infeasibility (ev_charger earliest start)
+qwen-3,S3b,0,interpretation: added constraint(s) -> false infeasibility (ev_charger earliest start)
+qwen-3,S3b,1,"interpretation: added constraint(s) -> false infeasibility (ev_charger earliest start, power cap, washing_machine deadline)"
+qwen-3,S3b,2,interpretation: added constraint(s) -> false infeasibility (ev_charger earliest start)
+qwen-3,S3c,0,interpretation: added constraint(s) -> false infeasibility (power cap)
+qwen-3,S3c,1,interpretation: added constraint(s) -> false infeasibility (power cap)
+qwen-3,S3c,2,interpretation: added constraint(s) -> false infeasibility (power cap)
+qwen-3,S5,0,interpretation: missed or loosened the EV deadline
+qwen-3,S5,1,interpretation: missed or loosened the EV deadline
+qwen-3,S5,2,interpretation: missed or loosened the EV deadline

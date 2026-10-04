@@ -10,6 +10,12 @@ Revised (step A1) figure:
     python plot_fig3_taxonomy.py --csv revision/outputs/a1_exp2_main_rescored.csv \
         --out revision/outputs/fig3_taxonomy_rescored
 
+Phase B figure (direct-guided vs hybrid, written by revision/b3_hybrid_analysis.py):
+    python plot_fig3_taxonomy.py --csv revision/outputs/b3_fig_direct_vs_hybrid.csv \
+        --left-prompt direct --right-prompt hybrid \
+        --left-title "(a) Direct scheduling" --right-title "(b) Hybrid (LLM to MILP)" \
+        --out revision/outputs/fig_direct_vs_hybrid
+
 Cells are failure rate: for S1/S2/S3/S5/S6 this is 1 - success_rate;
 for S4 (infeasible-task family) it is 1 - infeasibility_reported_rate,
 since correct behavior is to REPORT infeasibility rather than commit.
@@ -46,6 +52,10 @@ FAMILIES = [
 ap = argparse.ArgumentParser()
 ap.add_argument("--csv", default="data/results/exp2_main.csv",
                 help="Table 5 rates (default: original exp2_main.csv)")
+ap.add_argument("--left-prompt", default="v1")
+ap.add_argument("--right-prompt", default="v2-guided")
+ap.add_argument("--left-title", default="(a) Baseline prompt")
+ap.add_argument("--right-title", default="(b) Guided prompt")
 ap.add_argument("--out", default="figs/fig3_taxonomy",
                 help="output path without extension (.pdf and .png written)")
 args = ap.parse_args()
@@ -78,9 +88,9 @@ def cell(model, prompt, fam_key, metric):
         return 0.0
     return 1.0 - sum(vals) / len(vals)
 
-BASE   = np.array([[cell(m, "v1",        fk, mk) for _, fk, mk in FAMILIES]
+BASE   = np.array([[cell(m, args.left_prompt,  fk, mk) for _, fk, mk in FAMILIES]
                    for m in MODELS])
-GUIDED = np.array([[cell(m, "v2-guided", fk, mk) for _, fk, mk in FAMILIES]
+GUIDED = np.array([[cell(m, args.right_prompt, fk, mk) for _, fk, mk in FAMILIES]
                    for m in MODELS])
 
 cmap = LinearSegmentedColormap.from_list(
@@ -115,8 +125,8 @@ for k, (ax, arr) in enumerate([(axes[0], BASE), (axes[1], GUIDED)]):
     ax.axhline(N_COMMERCIAL - 0.5, color="0.30", linewidth=1.1)
 
 # small panel labels above each
-axes[0].set_title("(a) Baseline prompt", fontsize=9, pad=6, loc="center")
-axes[1].set_title("(b) Guided prompt",   fontsize=9, pad=6, loc="center")
+axes[0].set_title(args.left_title,  fontsize=9, pad=6, loc="center")
+axes[1].set_title(args.right_title, fontsize=9, pad=6, loc="center")
 
 # shared colorbar
 cbar = fig.colorbar(im, ax=axes, fraction=0.025, pad=0.02, shrink=0.85)
