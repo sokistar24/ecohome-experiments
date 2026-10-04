@@ -197,7 +197,7 @@ def main():
             est = mean(units)
             parts.append(f"{100*est:+12.1f} {'[' + f'{100*lo:+.1f}, {100*hi:+.1f}' + ']':>16s}")
             intervals.append({"quantity": f"Exp1 {key} FC - text {m}", "estimate": round(est, 3),
-                              "ci_low": round(lo, 3), "ci_high": round(hi, 3),
+                              "ci_low": round(lo, 4), "ci_high": round(hi, 4),
                               "method": "paired bootstrap over 12 days"})
         say(f"  {m:10s} " + " ".join(parts))
     say("")
@@ -227,7 +227,7 @@ def main():
         lo, hi = wilson(est, len(units))
         say(f"  {m:10s} {100*est:5.1f}%  95% CI [{100*lo:.0f}, {100*hi:.0f}]")
         intervals.append({"quantity": f"Exp2 compliance {m}", "estimate": round(est, 3),
-                          "ci_low": round(lo, 3), "ci_high": round(hi, 3),
+                          "ci_low": round(lo, 4), "ci_high": round(hi, 4),
                           "method": f"Wilson, n = {len(units)} scenario x prompt cells"})
     say("")
     if gpt_inv:

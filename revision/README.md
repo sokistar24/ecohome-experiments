@@ -213,8 +213,8 @@ Design (state in the paper's Methods):
 | C0 Paper assets (all tables and figures) | `python -m revision.c0_paper_assets`, then compile `revision/outputs/paper/assets_preview.tex` | done |
 | C1 Methods | (LaTeX); numbers from `python -m revision.c1_coupling_check` | done |
 | C2 Results, Discussion, Limitations | (LaTeX); drift numbers from `python -m revision.c2_drift_check` | done |
-| C3 Introduction, contributions, Related Work | (LaTeX) | |
-| C4 Abstract, title, conclusion, appendices, consistency pass | (LaTeX) | |
+| C3 Introduction, contributions, Related Work | (LaTeX) | done |
+| C4 Abstract, title, conclusion, appendices, consistency pass | (LaTeX); `python -m revision.c4_number_audit` (48/48 claims) | done |
 
 C0 reruns A1-A5 and B3, then writes LaTeX `tabular` blocks and PDF figures to
 `revision/outputs/paper/`. Captions and labels stay in `article.tex`; copy the folder into
@@ -247,3 +247,19 @@ cases described; deadline rule; S3a does not bind). The weekly-planning appendix
 a new appendix holds the baseline/guided table with severity. Provider drift: October reruns
 of the direct agent (`data/runs/exp2-drift.jsonl`) agree with July in 86% of runs vs 88%
 between July repeats (`revision/c2_drift_check.py`).
+
+**C3 (Introduction and Related Work)**: the introduction states the gap (no comparison of LLM
+placements under identical conditions), RQ1-RQ4, contributions C1-C4 as findings, the scope
+sentence and an outline. Related Work is organised by placement (advisory, interpreter, direct)
+and adds EnergiQ and MAS-DR (Reviewer 3). Table 1 gains a "placements compared / failures
+attributed" column. Total logged runs including the drift check: 2,118.
+
+**C4 (front and back matter, audit)**: new title, abstract (250 words), keywords, conclusion,
+standard CRediT roles, updated generative-AI declaration, Data Availability (release
+`paper-v2`), rewritten reproducibility appendix, note that the demo app is not the evaluated
+system, `\journal{Advanced Engineering Informatics}`, `xurl` for long URLs, highlights file.
+`revision/c4_number_audit.py` re-derives 48 quantitative claims in the paper from the outputs
+and logs; all pass. Interval CSVs from A5 now keep 4 decimals to avoid double rounding.
+
+Release: after the final commit, tag it so the paper's Data Availability resolves:
+`git tag paper-v2` then `git push origin paper-v2`.
