@@ -3,7 +3,7 @@ Phase C, step 4 -- audit every quantitative claim in the revised paper.
 
 Each check below quotes a claim as written in article.tex and recomputes it
 from revision/outputs/ (Phases A-C) or directly from the run logs. Run after
-`python -m revision.c0_paper_assets`, `c1_coupling_check` and `c2_drift_check`.
+`python -m revision.c0_paper_assets`, which rebuilds every output it reads.
 
     python -m revision.c4_number_audit
 
@@ -40,7 +40,18 @@ def near(a, b, tol):
     return abs(float(a) - float(b)) <= tol
 
 
+NEEDED = ["a5_table4_extended.csv", "a5_intervals.csv", "a5_summary.txt", "c1_coupling.txt",
+          "a4_severity_by_model.csv", "a4_invalid_runs.csv", "b3_exp2_arms.csv", "b3_summary.txt",
+          "b3_hybrid_failures.csv", "b3_extraction.csv", "c2_drift.csv", "b3_exp3.csv",
+          "a2_table6_extended.csv", "a2_fig5_matched.csv", "a3_schedule_match.csv",
+          "a3_table7.csv", "a6_weekly_runs.csv"]
+
+
 def main():
+    missing = [n for n in NEEDED if not (OUT / n).exists()]
+    if missing:
+        sys.exit("Missing outputs: " + ", ".join(missing) +
+                 "\nRun `python -m revision.c0_paper_assets` first; it rebuilds all of them.")
     # ---------------------------------------------------------------- Exp 1
     t4 = {(r["model"], r["interface"]): r for r in rows("a5_table4_extended.csv")}
     fc = [t4[(m, "fc")] for m in ("gpt", "gemini", "claude", "llama-3.3", "qwen-3")]

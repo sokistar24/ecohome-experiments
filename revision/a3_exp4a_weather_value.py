@@ -126,7 +126,7 @@ def main():
     for key, label in order:
         j = week[key]
         table.append({
-            "policy": label, "week_cost_gbp": round(j, 2),
+            "policy": label, "week_cost_gbp": round(j, 3),
             "ev_deadline_met_days": (f"{feas[key]}/7" if key in feas else
                                      f"{7 - len(agent_viol_days[key])}/7" if key in MODELS
                                      else "7/7"),          # MILPs: feasible by construction

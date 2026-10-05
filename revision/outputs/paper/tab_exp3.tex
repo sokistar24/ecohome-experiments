@@ -1,0 +1,11 @@
+\begin{tabular}{lcccccccc}
+\toprule
+ & \multicolumn{3}{c}{LLM agents (matched model-days)} & \multicolumn{3}{c}{MILP references} & \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Regime & \makecell{Direct,\\price-only} & \makecell{Direct,\\weather tools} & Hybrid & \makecell{Price-\\only} & \makecell{Weather-\\aware} & \makecell{Perfect\\foresight} & \makecell{Hybrid captures\\(\%)} \\
+\midrule
+Overcast & 4.477 & 4.513 & 4.382 & 4.469 & 4.378 & 4.330 & 96 \\
+Mixed & 5.441 & 5.436 & 5.332 & 5.427 & 5.332 & 5.305 & 100 \\
+Sunny & 3.516 & 3.562 & 3.302 & 3.517 & 3.302 & 3.302 & 100 \\
+\bottomrule
+\end{tabular}

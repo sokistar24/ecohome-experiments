@@ -1,0 +1,31 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{booktabs,makecell,graphicx,amsmath}
+\begin{document}
+\section*{Step 0 asset preview}
+\begin{table}[h]\centering\footnotesize
+\caption{Task completion and action interface (Exp.~1).}
+\resizebox{\linewidth}{!}{\input{tab_exp1.tex}}\end{table}
+\begin{table}[h]\centering\footnotesize
+\caption{Direct, guard and hybrid under constraint conflict (Exp.~2).}
+\resizebox{\linewidth}{!}{\input{tab_exp2_arms.tex}}\end{table}
+\begin{table}[h]\centering\footnotesize
+\caption{Sources of hybrid failures.}
+\resizebox{\linewidth}{!}{\input{tab_hybrid_fail.tex}}\end{table}
+\begin{table}[h]\centering\footnotesize
+\caption{Realized net cost (GBP/day) by weather regime (Exp.~3).}
+\resizebox{\linewidth}{!}{\input{tab_exp3.tex}}\end{table}
+\begin{table}[h]\centering\footnotesize
+\caption{Seven-day deployment (Exp.~4a).}
+\resizebox{\linewidth}{!}{\input{tab_exp4a.tex}}\end{table}
+\begin{table}[h]\centering\footnotesize
+\caption{Appendix: direct agent, baseline/guided prompt, with severity.}
+\resizebox{\linewidth}{!}{\input{tab_exp2_prompts.tex}}\end{table}
+\clearpage
+\begin{figure}[h]\centering\includegraphics[width=0.75\linewidth]{fig_efficiency.pdf}
+\caption{Correct behaviour vs cost per correct schedule, direct to hybrid.}\end{figure}
+\begin{figure}[h]\centering\includegraphics[width=\linewidth]{fig_direct_vs_hybrid.pdf}
+\caption{Failure rate by scenario family, direct vs hybrid.}\end{figure}
+\begin{figure}[h]\centering\includegraphics[width=0.9\linewidth]{fig_sunny_day.pdf}
+\caption{Illustrative sunny day.}\end{figure}
+\end{document}

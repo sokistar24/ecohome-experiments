@@ -1,0 +1,40 @@
+A6 -- Exp 4b weekly planning (10 runs, model: gpt)
+
+Sanity check 1 -- weekly MILP (EV by 07:30) reproduces baselines.json
+  week0 (2026-04-20): MILP GBP 19.91 with EV by 07:30 as coded, GBP 19.91 with EV by 08:00 as requested
+  week1 (2026-04-27): MILP GBP 18.01 with EV by 07:30 as coded, GBP 18.01 with EV by 08:00 as requested
+
+Sanity check 2 -- rebuilt plans agree with RUN.committed's last commit per appliance in 10/10 runs
+
+Per run (WM/DW counts, weekday EV charges; MILP = EV by 08:00 as requested):
+  week    WM  DW  EV  missing  unrequested  late EV  as asked  cost £  MILP £  gap £  gap %  tokens     s
+  week0    2   3   6        0            1        0     False   38.40   19.91  18.49   92.9   86787    32
+  week0    2   3   7        0            2        0     False   46.17   19.91  26.27  131.9   83180    24
+  week0    2   3   7        0            2        0     False   46.17   19.91  26.27  131.9   83265    23
+  week0    2   3   6        0            1        0     False   38.41   19.91  18.51   93.0   83092    22
+  week0    2   3   6        0            1        0     False   38.40   19.91  18.49   92.9   86843    66
+  week1    3   3   7        0            3        0     False   44.39   18.01  26.38  146.4   83292    76
+  week1    3   3   7        0            3        0     False   44.41   18.01  26.40  146.6   83243    48
+  week1    3   3   7        0            3        0     False   45.33   18.01  27.32  151.7   83224    30
+  week1    2   2   3        3            0        0     False   16.60   18.01  -1.41   -7.8   59342    20
+  week1    3   3   7        0            3        0     False   44.70   18.01  26.68  148.1   83282    30
+
+Runs that committed exactly what was requested: 0/10
+Runs with missing cycles: 1; with unrequested cycles (e.g. weekend EV charges): 9
+
+Requested cycles only (unrequested ones dropped, agent's best case), gap to the
+weekly MILP split into day allocation and within-day timing, GBP/week:
+  week    subset £   gap £  gap %  day alloc £  timing £
+  week0      30.74   10.84   54.4         0.39     10.45
+  week0      30.76   10.85   54.5         0.35     10.50
+  week0      30.76   10.85   54.5         0.35     10.50
+  week0      30.76   10.85   54.5         0.35     10.50
+  week0      30.74   10.84   54.4         0.39     10.45
+  week1      29.79   11.78   65.4         0.86     10.92
+  week1      29.81   11.80   65.5         0.86     10.93
+  week1      29.82   11.80   65.5         0.75     11.05
+  week1      29.79   11.78   65.4         0.86     10.92
+  share of the gap from day allocation: 5%
+
+Note: the weekly request asks for the EV 'ready by 08:00' but weekly_oracle in
+compute_baselines.py uses EV_LATEST_FINISH (07:30). Gaps above use the stated 08:00.

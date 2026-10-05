@@ -1,0 +1,16 @@
+\begin{tabular}{llrll}
+\toprule
+Type & Cause & Runs & Models & Scenarios \\
+\midrule
+Interpretation & Dropped or loosened the EV deadline $\Rightarrow$ invalid commit & 6 & Llama-3.3 3, Qwen-3 3 & S5 \\
+ & Invented a power cap $\Rightarrow$ false infeasibility & 6 & Qwen-3 6 & S1a, S1d, S3c \\
+ & Invented an EV earliest start $\Rightarrow$ false infeasibility & 5 & Llama-3.3 1, Qwen-3 4 & S3a, S3b \\
+ & Invented a washing-machine deadline $\Rightarrow$ false infeasibility & 4 & GPT-4o-mini 4 & S2a, S2b \\
+ & Invented several constraints $\Rightarrow$ false infeasibility & 1 & Qwen-3 1 & S3b \\
+\midrule
+Protocol & Did not retry after the injected tool failure & 2 & GPT-4o-mini 2 & S6 \\
+ & No optimizer call and no infeasibility report & 1 & GPT-4o-mini 1 & S4b \\
+\midrule
+ & Total & 25 & \multicolumn{2}{l}{22 interpretation, 3 protocol} \\
+\bottomrule
+\end{tabular}

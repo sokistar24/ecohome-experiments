@@ -1,0 +1,12 @@
+\begin{tabular}{lcccccc}
+\toprule
+Model & \makecell{Direct\\(\%)} & \makecell{Guard\\(\%)} & \makecell{Hybrid\\(\%)} & \makecell{Hybrid $-$ direct\\(pp)} & \makecell{Invalid commits\\direct $\to$ hybrid} & \makecell{\$ per correct\\direct / hybrid} \\
+\midrule
+GPT-4o-mini & 72 [45,\,89] & 87 [61,\,97] & 82 [55,\,94] & +10 [-13,\,+33] & 9 $\to$ 0 & 0.0037 / 0.0008 \\
+Gemini 2.5 Flash & 97 [73,\,100] & 97 [73,\,100] & 100 [77,\,100] & +3 [+0,\,+8] & 0 $\to$ 0 & 0.0151 / 0.0018 \\
+Claude Sonnet 4.6 & 100 [77,\,100] & 100 [77,\,100] & 100 [77,\,100] & +0 [+0,\,+0] & 0 $\to$ 0 & 0.0846 / 0.0221 \\
+\midrule
+Llama-3.3 70B & 38 [18,\,64] & 59 [33,\,81] & 90 [64,\,98] & +51 [+31,\,+69] & 5 $\to$ 3 & 0.0097 / 0.0006 \\
+Qwen-3 32B & 79 [52,\,93] & 64 [38,\,84] & 64 [38,\,84] & -15 [-41,\,+10] & 3 $\to$ 3 & 0.0040 / 0.0005 \\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,2 @@
+Exp 1: independent cheapest windows equal the joint MILP on 12/12 days (max difference GBP 0.000000)
+Exp 3: optimising each appliance alone against the full PV forecast differs from the joint MILP on 15/15 days (mean GBP 0.16/day, max 0.34); under a 9 kW cap those independent plans break the cap on 14/15 days

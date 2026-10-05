@@ -19,21 +19,21 @@ Exp1 success qwen-3 fc,1,0.758,1.0,"Wilson, n = 12 days"
 Exp1 optimality qwen-3 fc,0.722,0.441,0.895,"Wilson, n = 12 days"
 Exp1 success qwen-3 text,0.75,0.468,0.911,"Wilson, n = 12 days"
 Exp1 optimality qwen-3 text,0.472,0.233,0.725,"Wilson, n = 12 days"
-Exp1 success FC - text gpt,0.056,0,0.139,paired bootstrap over 12 days
-Exp1 optimal FC - text gpt,0.694,0.528,0.833,paired bootstrap over 12 days
+Exp1 success FC - text gpt,0.056,0,0.1389,paired bootstrap over 12 days
+Exp1 optimal FC - text gpt,0.694,0.5278,0.8333,paired bootstrap over 12 days
 Exp1 success FC - text gemini,0.083,0,0.25,paired bootstrap over 12 days
-Exp1 optimal FC - text gemini,0.361,0.139,0.611,paired bootstrap over 12 days
-Exp1 success FC - text claude,0.5,0.278,0.722,paired bootstrap over 12 days
-Exp1 optimal FC - text claude,0.528,0.306,0.778,paired bootstrap over 12 days
-Exp1 success FC - text llama-3.3,0.167,0.0,0.361,paired bootstrap over 12 days
-Exp1 optimal FC - text llama-3.3,0.056,-0.139,0.25,paired bootstrap over 12 days
+Exp1 optimal FC - text gemini,0.361,0.1389,0.6111,paired bootstrap over 12 days
+Exp1 success FC - text claude,0.5,0.2778,0.7222,paired bootstrap over 12 days
+Exp1 optimal FC - text claude,0.528,0.3056,0.7778,paired bootstrap over 12 days
+Exp1 success FC - text llama-3.3,0.167,0.0,0.3611,paired bootstrap over 12 days
+Exp1 optimal FC - text llama-3.3,0.056,-0.1389,0.25,paired bootstrap over 12 days
 Exp1 success FC - text qwen-3,0.25,0,0.5,paired bootstrap over 12 days
-Exp1 optimal FC - text qwen-3,0.25,-0.0,0.528,paired bootstrap over 12 days
-Exp2 compliance gpt,0.667,0.475,0.816,"Wilson, n = 26 scenario x prompt cells"
-Exp2 compliance gemini,0.936,0.776,0.984,"Wilson, n = 26 scenario x prompt cells"
-Exp2 compliance claude,1,0.871,1.0,"Wilson, n = 26 scenario x prompt cells"
-Exp2 compliance llama-3.3,0.5,0.321,0.679,"Wilson, n = 26 scenario x prompt cells"
-Exp2 compliance qwen-3,0.718,0.526,0.854,"Wilson, n = 26 scenario x prompt cells"
+Exp1 optimal FC - text qwen-3,0.25,-0.0,0.5278,paired bootstrap over 12 days
+Exp2 compliance gpt,0.667,0.4747,0.8157,"Wilson, n = 26 scenario x prompt cells"
+Exp2 compliance gemini,0.936,0.7755,0.9841,"Wilson, n = 26 scenario x prompt cells"
+Exp2 compliance claude,1,0.8713,1.0,"Wilson, n = 26 scenario x prompt cells"
+Exp2 compliance llama-3.3,0.5,0.3206,0.6794,"Wilson, n = 26 scenario x prompt cells"
+Exp2 compliance qwen-3,0.718,0.526,0.8538,"Wilson, n = 26 scenario x prompt cells"
 "Exp3 weather value, MILP",0.133,0.063,0.211,bootstrap over 15 days
 "Exp3 weather value, agents (matched)",-0.026,-0.058,0.0,bootstrap over 15 days
 Exp3 MILP minus agents,0.16,0.074,0.258,bootstrap over 15 days

@@ -236,7 +236,7 @@ def main():
         say(f"  {m:10s}" + "".join(f"{100*e:6.0f}% [{100*lo:3.0f},{100*hi:4.0f}]".rjust(22)
                                    for e, lo, hi in cells)
             + f"{100*mean(diffs):+7.0f} pp [{100*dlo:+.0f},{100*dhi:+.0f}]".rjust(24))
-        arm_rows.append({"model": m, **{f"{a}_rate": round(cells[i][0], 3) for i, a in enumerate(ARMS)},
+        arm_rows.append({"model": m, **{f"{a}_rate": round(cells[i][0], 4) for i, a in enumerate(ARMS)},
                          **{f"{a}_ci": f"[{100*cells[i][1]:.0f}, {100*cells[i][2]:.0f}]"
                             for i, a in enumerate(ARMS)},
                          "hybrid_minus_direct_pp": round(100 * mean(diffs), 1),
